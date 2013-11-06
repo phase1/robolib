@@ -16,11 +16,6 @@ import com.sulon.math.macro_functions;
 
 public class lb_lrf_object_detect {
 	
-	lb_regression lb_lin_reg = new lb_regression();
-	lb_data_type lb_dt = new lb_data_type();
-	lb_vec2 lb_v2 = new lb_vec2();
-
-	
 	public int lb_lrf_recusive_line_fitting(vec2f[] points, lrf_object[] objects, float min_length, float err_threshold, int min_point)	{
 		int n = points.length;
 		int id = -1;
@@ -38,7 +33,7 @@ public class lb_lrf_object_detect {
 		}
 
 		float m = 0, b = 0, r = 0;
-		lb_lin_reg.lb_liner_regression(points, m, b, r);
+		lb_regression.lb_liner_regression(points, m, b, r);
 
 		//check result
 		if(m == 0 && b == 0 && r == 0) {
@@ -55,8 +50,8 @@ public class lb_lrf_object_detect {
 			};
 
 			double rho =  Math.abs(b/Math.sqrt(Math.pow(m*m,2)+1));
-			vec2f p = lb_v2.new vec2f(rho*Math.cos(theta), rho*Math.sin(theta));
-			vec2f o = lb_v2.new vec2f(Math.cos(theta), Math.sin(theta));
+			vec2f p = new vec2f(rho*Math.cos(theta), rho*Math.sin(theta));
+			vec2f o = new vec2f(Math.cos(theta), Math.sin(theta));
 
 			//add line
 			lrf_object line = null;
@@ -75,7 +70,7 @@ public class lb_lrf_object_detect {
 		} else {
 			//LB_PRINT_VAL("recursive check");
 			double A = 0, B = 0, C = 0, ss = 0;
-			lb_lin_reg.lb_line_define(points, A, B, C);
+			lb_regression.lb_line_define(points, A, B, C);
 			ss = macro_functions.LB_SIZE(A, B);
 
 			// search for lines break
@@ -232,7 +227,7 @@ public class lb_lrf_object_detect {
 			double mid = tmp.x / 2.0f;
 			double q = average - (macro_functions.M_PI/2.0f);
 			double height = mid * Math.tan(q);
-			vec2f center1 = lb_v2.new vec2f(mid, height);
+			vec2f center1 = new vec2f(mid, height);
 			double radius = center1.size();
 			center1 = center1.rotate(angle_to_rotate, true);
 			center = center1.add(left);
@@ -460,7 +455,7 @@ public class lb_lrf_object_detect {
 		}
 		sum_x /= n;
 		sum_y /= n;
-		vec2f v2 = lb_v2.new vec2f(sum_x, sum_y);
+		vec2f v2 = new vec2f(sum_x, sum_y);
 
 		lrf_object group = null;
 		group.points = points;

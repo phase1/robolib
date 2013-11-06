@@ -6,9 +6,9 @@ import com.sulon.datatypes.lb_vec2.vec2f;
 
 public class lb_pose2f {
 
-	double x;    //!< X position
-	double y;    //!< Y position
-	double a;    //!< direction
+	public double x;    //!< X position
+	public double y;    //!< Y position
+	public double a;    //!< direction
 
 	///Constructor
 	public lb_pose2f(){  

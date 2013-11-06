@@ -1,5 +1,8 @@
 package com.sulon.math;
 
+import com.sulon.datatypes.lb_pose2f;
+import com.sulon.datatypes.lb_vec2.vec2f;
+
 public class macro_functions {
 	public static double M_E       = 2.7182818284590452354;   /* e */
 	public static double M_LOG2E   = 1.4426950408889634074;   /* log_2 e */
@@ -80,10 +83,14 @@ public class macro_functions {
 
 
 	//simple print
-	public static void LB_PRINT_VAR(double x) {
-		System.out.println(x);
+	public static void LB_PRINT_VAR(vec2f x) {
+		System.out.println("X Val = " + x.x + " Y Val = " + x.y);
 	}
 
+	public static void LB_PRINT_VAR(lb_pose2f x) {
+		System.out.println("X Val = " + x.x + ", Y Val = " + x.y + ", A Val = " + x.a  );
+	}
+	
 	public static void LB_PRINT_VAL(double x){
 		System.out.println(x);
 	}
@@ -152,6 +159,7 @@ public class macro_functions {
 		return (LB_CHK_SIZE4(v0, v1, v2, v3) && LB_CHK_SIZE2(v0, v4));
 	}
 
+	
 	
 
 }

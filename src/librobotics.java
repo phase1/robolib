@@ -14,7 +14,7 @@ public class librobotics {
 	#include "src/lb_statistic_function.h" /* STARTED */
 	#include "src/lb_data_type.h" /** FINISHED */
 	//#include "src/lb_lrf_psm.h"
-	#include "src/lb_math_model.h" /* STARTED */
+	#include "src/lb_math_model.h" /** FINISHED */
 	#include "src/lb_particle_function.h" /* NOT STARTED */
 	#include "src/lb_math_area_check.h" /* NOT STARTED */
 

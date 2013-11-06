@@ -4,7 +4,7 @@ import com.sulon.datatypes.lb_vec2.vec2f;
 
 public class lb_regression {
 	
-	public void lb_line_define(vec2f[] points,double a,double b,double c)	{
+	public static void lb_line_define(vec2f[] points,double a,double b,double c)	{
 	    int end_idx = points.length - 1;
 
 	    //Ax+By+C=0
@@ -18,7 +18,7 @@ public class lb_regression {
 	}
 
 	
-	public void lb_liner_regression(vec2f[] points, double m, double b, double r)	{
+	public static void lb_liner_regression(vec2f[] points, double m, double b, double r)	{
 	    int n = points.length;
 	    if(n > 0) {
 	    	double sum_x = 0;
