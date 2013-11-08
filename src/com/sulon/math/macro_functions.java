@@ -116,6 +116,11 @@ public class macro_functions {
 		 v = (double[])resizeArray(v, x);
 	}
 		
+	public static void LB_RESIZE_VEC2F (vec2f[] v, int n) {
+		 v = (vec2f[]) resizeArray(v, n);
+		
+	}
+	
 	//vector resize
 	public static void LB_RESIZE_2D_VEC(double[][] v, int x, int y){ 
 		  v = (double[][])resizeArray(v, x);
@@ -157,6 +162,11 @@ public class macro_functions {
 	
 	public static boolean LB_CHK_SIZE5(double[] v0, double[] v1, double[] v2, double[] v3, double[] v4) { 
 		return (LB_CHK_SIZE4(v0, v1, v2, v3) && LB_CHK_SIZE2(v0, v4));
+	}
+
+	public static void LB_RESIZE(vec2f[] v, int n) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	

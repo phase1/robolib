@@ -209,7 +209,9 @@ public class lb_vec2{
 	public class vec2i{
 		private float M_PI = 3.14159265359f;
 
-		int x, y;
+		public int x;
+
+		public int y;
 
 		//Empty Constructor
 		public vec2i(){

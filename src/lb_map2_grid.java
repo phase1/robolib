@@ -1,6 +1,11 @@
 
+import java.io.File;
+
+import org.omg.CORBA.Environment;
+
 import com.sulon.datatypes.*;
 import com.sulon.datatypes.lb_vec2.vec2f;
+import com.sulon.datatypes.lb_vec2.vec2i;
 import com.sulon.math.lb_statistic_function;
 import com.sulon.math.macro_functions;
 
@@ -64,9 +69,9 @@ public class lb_map2_grid {
 	 * @param v result in grid coordinate
 	 * @return true if (x,y) is inside the map
 	 */
-	public boolean get_grid_coordinate(double x, double y, vec2f v) {
-		v.x = center.x + (int)macro_functions.LB_ROUND((x-offset.x)/resolution);
-		v.y = center.y + (int)macro_functions.LB_ROUND((y-offset.y)/resolution);
+	public boolean get_grid_coordinate(double x, double y, vec2i v) {
+		v.x = (int) (center.x + (int)macro_functions.LB_ROUND((x-offset.x)/resolution));
+		v.y = (int) (center.y + (int)macro_functions.LB_ROUND((y-offset.y)/resolution));
 		if(is_inside(v.x, v.y))
 			return true;
 		else {
@@ -89,7 +94,6 @@ public class lb_map2_grid {
 				}
 			}
 		} while(!pass && (retry-- > 0));
-		
 		return pass;
 	}
 
@@ -105,14 +109,14 @@ public class lb_map2_grid {
 	 *          1 if hit \n
 	 *          2 if not hit
 	 */
-	public int get_ray_casting_hit_point(int x, int y, double dir, vec2f hit_grid) {
+	public int get_ray_casting_hit_point(int x, int y, double dir, vec2i hit_grid) {
 		//outside the map
 		if(!is_inside(x, y))
 			return -1;
 
 		//hit itself
 		if(mapprob[x][y] != 0) {
-			vec2f vec2 = new vec2f((double) x, (double)y);
+			vec2i vec2 = new vec2i(x,y);
 			hit_grid.equal(vec2);
 			return 0;
 		}
@@ -187,21 +191,20 @@ public class lb_map2_grid {
 	public void compute_ray_casting_cache(double _angle_res, double threshold) {
 		threshold = 0;
 		if(_angle_res <= 0) {
-			System.out.println("lb_map2_grid: angle resolution must be > 0");
-			//throw LibRoboticsRuntimeException("angle resolution must > 0");
+			System.out.println("lb_map2_grid: angle resolution must > 0");
 		}
 		angle_res = _angle_res;
 		angle_step = (int)((2*macro_functions.M_PI) / angle_res + 1);
 		int result;
-		vec2f hit;
+		vec2i hit;
 		int cnt = 0;
 
-		System.out.println("Start ray casting compute...");
-		ray_casting_cache.resize(size.x);
+		System.out.println("lb_map2_grid: Start ray casting compute...");
+		ray_casting_cache.resize[](size.x);
 		for(int x = 0; x < size.x; x++) {
 			ray_casting_cache[x].resize(size.y);
 			if((x % 10) == 0) {
-				LB_PRINT_STREAM << ".";
+				System.out.print(".");
 			}
 			for(int y = 0; y < size.y; y++) {
 				if(mapprob[x][y] > threshold) {
@@ -212,7 +215,7 @@ public class lb_map2_grid {
 				for(int i = 0; i < angle_step; i++) {
 					result = get_ray_casting_hit_point(x, y, i * angle_res, hit);
 					if(result == 1) {
-						ray_casting_cache[x][y][i] = LB_SIZE((double)(x-hit.x), (double)(y-hit.y)) * resolution;
+						ray_casting_cache[x][y][i] = macro_functions.LB_SIZE((double)(x-hit.x), (double)(y-hit.y)) * resolution;
 					} else {
 						ray_casting_cache[x][y][i] = -1;    //no measurement on that direction
 					}
@@ -220,12 +223,12 @@ public class lb_map2_grid {
 				}
 			}
 		}
-		LB_PRINT_STREAM << "done! with " << cnt << " ray casting operations\n";
+		System.out.println("done! with " + cnt + " ray casting operations\n");
 	}
 
-	inline bool get_gradient_path(const vec2f& start,
-			const vec2f& goal,
-			std::vector<vec2i>& path,
+	public boolean get_gradient_path(vec2f start,
+			vec2f goal,
+			vec2i[] path,
 			double clearance)
 	{
 		vec2i grid_start;
@@ -234,27 +237,27 @@ public class lb_map2_grid {
 		//check start point
 		if(get_grid_coordinate(start.x, start.y, grid_start)) {
 			if(dyn_mapprob[grid_start.x][grid_start.y] > 0.0) {
-				std::cerr << "start position is inside the obstacle\n";
+				System.out.println( "start position is inside the obstacle\n" );
 				return false;
 			}
 		} else {
-			LB_PRINT_STREAM << "start position is outside the map\n";
+			System.out.println( "start position is outside the map\n");
 			return false;
 		}
 
 		//check goal point
 		if(get_grid_coordinate(goal.x, goal.y, grid_goal)) {
 			if(dyn_mapprob[grid_goal.x][grid_goal.y] > 0) {
-				LB_PRINT_STREAM << "goal position is inside the obstacle\n";
+				System.out.println( "goal position is inside the obstacle\n");
 				return false;
 			}
 		} else {
-			LB_PRINT_STREAM << "goal position is outside the map\n";
+			System.out.println("goal position is outside the map\n");
 			return false;
 		}
 
-		LB_PRINT_STREAM << "Move from: " << start << " (" << grid_start
-		<<  ") to: " << goal << "  (" << grid_goal << ")\n";
+		System.out.println("Move from: " +start+ " (" + grid_start+
+		") to: " + goal + "  (" + grid_goal + ")\n");
 
 		//#warning "not implement"
 
@@ -262,7 +265,8 @@ public class lb_map2_grid {
 	}
 
 
-	inline void load_config(const std::string& filename) {
+	public void load_config(String filename) {
+		File sdcard = Environment.getExternalStorageDirectory();
 		std::ifstream file;
 		file.open(filename.c_str());
 		if(!file.is_open())
@@ -282,7 +286,7 @@ public class lb_map2_grid {
 		file.close();
 	}
 
-	inline void save_config(const std::string& filename) {
+	public void save_config(String filename) {
 		std::ofstream file;
 		file.open(filename.c_str());
 		if(!file.is_open())
@@ -390,73 +394,6 @@ public class lb_map2_grid {
 		file << "\n";
 		file.close();
 	}
-
-
-
-	#if (librobotics_use_cimg == 1)
-		/**
-		 * Load map data from image file. Image data should save in 8 bit color depth format.
-		 * This function will use only first channel as map data.
-		 * Map data will read directly for each pixel position to grid position.
-		 * @param filename of the map image
-		 * @param _offset map offset in real world unit (m, mm, cm...)
-		 * @param _center map center in real world unit (m, mm, cm...)
-		 * @param _resolution map resolution in real world unit (m, mm, cm...)
-		 */
-		inline void load_map_image(const std::string& filename) {
-		using namespace cimg_library;
-		cimg8u img;
-
-		try {
-			img.load(filename.c_str());
-		} catch (CImgException& e) {
-			throw LibRoboticsIOException(e._message);
-		}
-
-
-		for(int i = 0; i < size.x && i < img._width; i++) {
-			for(int j = 0; j < size.y && j < img._height; j++) {
-				mapprob[i][j] = (255 - img(i, j, 0)) / 255.0;
-			}
-		}
-
-		//copy map
-		dyn_mapprob = mapprob;
-	}
-
-
-	/**
-	 * Get image of the map
-	 * @param flip_x true to flip result image along X-axis
-	 * @param flip_y true to flip result image along Y-axis
-	 * @return image in CImg<unsigned char> format.
-	 */
-	inline cimg8u get_image(bool flip_x = false,
-			bool flip_y = true,
-			bool invert = true)
-	{
-		using namespace cimg_library;
-		cimg8u img(size.x, size.y, 1, 3, 0);
-		unsigned char v = 0;
-		int x, y;
-		for(int i = 0; i < size.x; i++) {
-			for(int j = 0; j < size.y; j++) {
-				v = (unsigned char)(mapprob[i][j] * 255);
-				x = i;
-				y = j;
-
-				if(invert) v = 255 - v;
-				if(flip_x) x = (size.x - 1) - x;
-				if(flip_y) y = (size.y - 1) - y;
-
-				img(x, y, 0) = v;
-				img(x, y, 1) = v;
-				img(x, y, 2) = v;
-			}
-		}
-		return img;
-	}
-	#endif //(librobotics_use_cimg == 1)
 
 
 }

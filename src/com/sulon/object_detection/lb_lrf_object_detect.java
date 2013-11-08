@@ -503,11 +503,19 @@ public class lb_lrf_object_detect {
 						if(leg_dist < max_leg_distance) {
 							//LB_PRINT_VAL("add 1+1 leg");
 							//add human
-							lrf_object human;
+							lrf_object human = null;
 							human.points = curr_leg.points;
-							human.points.insert( human.points.end(),
-									objects[i].points.begin(),
-									objects[i].points.end());
+							ArrayList<vec2f> hmn_pts = new ArrayList<vec2f>(Arrays.asList(human.points));
+
+							/* 
+							 * Append human.points with objects[i].points
+							 */
+							for (i = 0; i < objects[i].points.length; i ++){
+								hmn_pts.add(objects[i].points[i]);
+							}
+							
+							hmn_pts.toArray(human.points);
+					
 							human.extra_point[0] =
 									curr_leg.extra_point[0].add(objects[i].extra_point[0]).times(0.5);
 							human.type = lb_data_type.lrf_object_type.LRF_OBJ_HUMAN.getObjectType();
@@ -543,9 +551,12 @@ public class lb_lrf_object_detect {
 				lrf_object curr_leg = it.next();
 				if(objects[i].segment_id == curr_leg.segment_id) {
 					switch(objects[i].type) {
-					case lb_data_type.lrf_object_type.LRF_OBJ_LINE.getObjectType() : pass--; break;
-					case lb_data_type.lrf_object_type.LRF_OBJ_ARC.getObjectType() : pass--; break;
-					case lb_data_type.lrf_object_type.LRF_OBJ_GROUP.getObjectType() :
+					//Obj Type Line
+					case 0x01 : pass--; break;
+					//Obj Type Arc
+					case 0x02 : pass--; break;
+					//Obj Type Group
+					case 0x08 :
 						if(min_group_size <= objects[i].extra_param[0] &&
 						max_group_size >= objects[i].extra_param[0])
 						{
